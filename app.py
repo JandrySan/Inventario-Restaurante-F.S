@@ -4,6 +4,7 @@ from bson.objectid import ObjectId
 import datetime
 import json
 import pytz
+import os 
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev")  # Cambiar a config segura en producción
@@ -703,4 +704,5 @@ def ver_detalle_credito(pedido_id):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
