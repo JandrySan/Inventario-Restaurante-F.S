@@ -6,13 +6,14 @@ import json
 import pytz
 
 app = Flask(__name__)
-app.secret_key = "dev"  # Cambiar a config segura en producción
+app.secret_key = os.getenv("SECRET_KEY", "dev")  # Cambiar a config segura en producción
 
-client = MongoClient("mongodb://localhost:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+client = MongoClient(MONGO_URI)
 db = client["pos_system"]
+
 productos_col = db["productos"]
 pedidos_col = db["pedidos"]
-
 
 @app.route("/menu")
 def menu():
@@ -702,3 +703,4 @@ def ver_detalle_credito(pedido_id):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
