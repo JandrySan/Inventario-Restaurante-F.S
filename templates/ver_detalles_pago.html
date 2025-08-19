@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Detalles de Pago - Pedido #{{ pedido._id }}</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 30px;
+    }
+
+    .pedido-info, .productos-lista {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
+    }
+
+    .pedido-info p {
+      margin: 8px 0;
+      font-size: 1rem;
+    }
+
+    .pedido-info p strong {
+      color: #555;
+    }
+
+    .productos-lista h2 {
+      margin-bottom: 15px;
+      color: #007bff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f7f9fc;
+    }
+
+    tfoot td {
+      font-weight: bold;
+      background: #f1f3f6;
+    }
+
+    .volver {
+      display: inline-block;
+      margin-top: 10px;
+      color: #6c757d;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .volver:hover {
+      color: #343a40;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Detalles de Pago - Pedido #{{ pedido._id }}</h1>
+
+  <div class="pedido-info">
+    <p><strong>Cliente:</strong> {{ pedido.cliente }}</p>
+    <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+    <p><strong>Total:</strong> ${{ '%.2f' % pedido.total }}</p>
+    {% if pedido.get('metodo_pago') %}
+    <p><strong>Método de Pago:</strong> {{ pedido.metodo_pago }}</p>
+    {% endif %}
+    {% if pedido.get('monto_pagado') is not none %}
+    <p><strong>Monto Pagado:</strong> ${{ '%.2f' % pedido.monto_pagado }}</p>
+    {% endif %}
+    {% if pedido.get('cambio') is not none %}
+    <p><strong>Cambio:</strong> ${{ '%.2f' % pedido.cambio }}</p>
+    {% endif %}
+  </div>
+
+  <div class="productos-lista">
+    <h2>Productos</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Tamaño</th>
+          <th>Cantidad</th>
+          <th>Precio Unitario</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pedido.productos %}
+        <tr>
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.tamano if p.tamano else "-" }}</td>
+          <td>{{ p.cantidad }}</td>
+          <td>${{ '%.2f' % p.precio_unitario }}</td>
+          <td>${{ '%.2f' % (p.precio_unitario * p.cantidad) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4">Total</td>
+          <td>${{ '%.2f' % pedido.total }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <p style="text-align:center;">
+    <a href="{{ url_for('pos_panel') }}" class="volver">← Volver al panel</a>
+  </p>
+
+</body>
+</html>

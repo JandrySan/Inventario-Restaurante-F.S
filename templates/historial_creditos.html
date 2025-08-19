@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Historial de Créditos</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #f0f4ff, #f9f5ff);
+    margin: 0;
+    padding: 25px;
+    color: #111827;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 2.4rem;
+    color: #6c5ce7;
+    margin-bottom: 25px;
+  }
+
+  a.volver {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #5b5b5b;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+
+  a.volver:hover {
+    color: #341f97;
+  }
+
+  .cliente-credito {
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    transition: transform 0.3s;
+  }
+
+  .cliente-credito:hover {
+    transform: translateY(-3px);
+  }
+
+  h3 {
+    color: #341f97;
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+  }
+
+  .saldo {
+    font-weight: 600;
+    margin-top: 8px;
+    color: #e67e22;
+  }
+
+  .pedido-card {
+    margin-top: 18px;
+    padding: 15px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+  }
+
+  .pedido-card:hover {
+    transform: translateY(-2px);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 12px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(6px);
+  }
+
+  th, td {
+    padding: 12px 10px;
+    text-align: center;
+  }
+
+  th {
+    background: rgba(108,92,231,0.85);
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+  }
+
+  tbody tr:nth-child(even) {
+    background: rgba(255,255,255,0.1);
+  }
+
+  tbody tr:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-1px);
+  }
+
+  td {
+    font-size: 0.95rem;
+  }
+
+  .btn-abonar {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .btn-abonar:first-of-type {
+    background: linear-gradient(135deg, #27ae60, #1e8449);
+    color: white;
+    margin-right: 10px;
+  }
+
+  .btn-abonar:first-of-type:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  }
+
+  .btn-abonar:last-of-type {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    color: white;
+  }
+
+  .btn-abonar:last-of-type:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  }
+
+  @media (max-width: 768px) {
+    .pedido-card, .cliente-credito {
+      padding: 15px;
+    }
+
+    table {
+      font-size: 0.85rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>Historial de Créditos</h1>
+<a href="{{ url_for('pos_panel') }}" class="volver">← Volver al panel</a>
+
+{% if clientes_credito %}
+  {% for nombre_cliente, cliente_data in clientes_credito.items() %}
+    <div class="cliente-credito">
+      <h3>Cliente: {{ nombre_cliente }}</h3>
+      <p class="saldo">Total adeudado: ${{ "%.2f"|format(cliente_data.get("total_adeudado", 0)) }}</p>
+
+      {% for pedido in cliente_data.get("pedidos", []) %}
+        <div class="pedido-card">
+          <p><strong>Pedido:</strong> {{ pedido.get("descripcion", "Sin descripción") }}</p>
+          <p><strong>Total pedido:</strong> ${{ "%.2f"|format(pedido.get("total",0)) }}</p>
+          <p class="saldo">Saldo restante: ${{ "%.2f"|format(pedido.get("saldo_restante",0)) }}</p>
+
+          {% if pedido.get("historial") %}
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Abono</th>
+                  <th>Saldo restante</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for abono in pedido.get("historial", []) %}
+                  <tr>
+                    <td>{{ abono.get("fecha").strftime("%Y-%m-%d %H:%M:%S") if abono.get("fecha") else "-" }}</td>
+                    <td>${{ "%.2f"|format(abono.get("monto",0)) }}</td>
+                    <td>${{ "%.2f"|format(abono.get("saldo_restante",0)) }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p style="margin-top:10px;">No se han registrado abonos aún.</p>
+          {% endif %}
+
+          <a href="{{ url_for('abonar_credito', pedido_id=pedido.get('pedido_id')) }}" class="btn-abonar">Abonar</a>
+          <a href="{{ url_for('ver_detalle_credito', pedido_id=pedido.get('pedido_id')) }}" class="btn-abonar">Ver detalle</a>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+{% else %}
+  <p style="text-align:center; font-weight:500;">No hay créditos registrados.</p>
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Abonar Crédito - Pedido #{{ pedido._id }}</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    a.volver {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #6c757d;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a.volver:hover {
+      color: #343a40;
+    }
+
+    .abono-form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      max-width: 500px;
+      margin: auto;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 500;
+    }
+
+    input[type=number] {
+      padding: 10px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+      font-size: 1rem;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #fff;
+      background: linear-gradient(135deg,#27ae60,#1e8449);
+      transition: transform 0.2s, background 0.3s;
+      width: 100%;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    #saldo-restante {
+      font-weight: bold;
+      margin-top: 10px;
+      color: #e67e22;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Abonar Crédito - Pedido #{{ pedido._id }}</h1>
+  <a href="{{ url_for('historial_creditos') }}" class="volver">← Volver al Historial de Créditos</a>
+
+  <div class="abono-form">
+    <p><strong>Cliente:</strong> {{ pedido.cliente }}</p>
+    <p><strong>Total Pedido:</strong> ${{ '%.2f' % pedido.total }}</p>
+    <p><strong>Saldo Restante:</strong> ${{ '%.2f' % saldo_restante }}</p>
+
+    <form method="POST">
+      <label for="monto_abono">Monto a Abonar:</label>
+      <input type="number" id="monto_abono" name="monto_abono" min="0.01" max="{{ saldo_restante }}" step="0.01" value="{{ saldo_restante }}" required>
+
+      <p id="saldo-restante">Saldo restante después del abono: ${{ '%.2f' % saldo_restante }}</p>
+
+      <button type="submit">Registrar Abono</button>
+    </form>
+  </div>
+
+  <script>
+    const montoInput = document.getElementById('monto_abono');
+    const saldoTexto = document.getElementById('saldo-restante');
+    const saldoActual = {{ saldo_restante }};
+
+    montoInput.addEventListener('input', () => {
+      let abono = parseFloat(montoInput.value) || 0;
+      let saldo = saldoActual - abono;
+      if (saldo < 0) saldo = 0;
+      saldoTexto.textContent = `Saldo restante después del abono: $${saldo.toFixed(2)}`;
+    });
+  </script>
+
+</body>
+</html>

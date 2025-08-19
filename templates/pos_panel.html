@@ -1,0 +1,102 @@
+{% extends "menu.html" %}
+
+{% block title %}POS - Panel Principal{% endblock %}
+
+{% block content %}
+
+  <h1 style="text-align: center; color: #007bff; margin-bottom: 20px;">POS - Panel Principal</h1>
+  <a href="{{ url_for('index') }}" class="volver" style="display:inline-block; margin-bottom:20px; color:#6c757d; text-decoration:none; font-weight:500;">
+    ← Volver al Menú Principal
+  </a>
+
+  <button class="btn-nuevo-pedido" 
+          onclick="location.href='{{ url_for('pos_nuevo_pedido') }}'"
+          style="display:block; margin:0 auto 25px auto; padding:12px 25px; background:linear-gradient(135deg,#3498db,#2980b9); color:#fff; border:none; border-radius:8px; font-size:1.1rem; font-weight:bold; cursor:pointer; transition:transform 0.2s;">
+    Nuevo Pedido
+  </button>
+
+  <!-- Pedidos Activos -->
+  <h2 style="color:#007bff; margin-top:30px; margin-bottom:15px; border-bottom:2px solid #007bff; display:inline-block; padding-bottom:5px;">
+    Pedidos Activos
+  </h2>
+
+  {% if pedidos_activos %}
+    {% for pedido in pedidos_activos %}
+      <div class="pedido-card pendiente" 
+           style="background:#fff; border-radius:10px; padding:15px 20px; margin-bottom:15px; box-shadow:0 4px 15px rgba(0,0,0,0.08); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; border-left:5px solid #f39c12;">
+        <div class="pedido-info" style="flex:1; min-width:200px; margin-bottom:10px; color:#555;">
+          <strong style="color:#222;">Cliente:</strong> {{ pedido.cliente }}<br>
+          <strong style="color:#222;">Estado:</strong> {{ pedido.estado }}<br>
+          <strong style="color:#222;">Total:</strong> ${{ '%.2f' % pedido.total }}
+        </div>
+        <div class="btn-group" style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn-editar"
+                  onclick="location.href='{{ url_for('editar_pedido', pedido_id=pedido._id) }}'"
+                  style="flex:1; min-width:120px; padding:8px 15px; border:none; border-radius:6px; background:#3498db; color:#fff; font-weight:500; cursor:pointer; transition:0.2s;">
+            Ver / Modificar
+          </button>
+
+          <form method="POST" 
+                action="{{ url_for('eliminar_pedido', pedido_id=pedido._id) }}" 
+                onsubmit="return confirm('¿Seguro que quieres eliminar este pedido?');"
+                style="flex:1; min-width:120px;">
+            <button type="submit" class="btn-eliminar"
+                    style="width:100%; padding:8px 15px; border:none; border-radius:6px; background:#e74c3c; color:#fff; font-weight:500; cursor:pointer; transition:0.2s;">
+              Eliminar
+            </button>
+          </form>
+
+          <button class="btn-pagar"
+                  onclick="location.href='{{ url_for('pagar_pedido', pedido_id=pedido._id) }}'"
+                  style="flex:1; min-width:120px; padding:8px 15px; border:none; border-radius:6px; background:#27ae60; color:#fff; font-weight:500; cursor:pointer; transition:0.2s;">
+            Pagar
+          </button>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p style="font-style:italic; color:#777; text-align:center; margin-bottom:20px;">
+      No hay pedidos activos.
+    </p>
+  {% endif %}
+
+  <!-- Pedidos Pagados -->
+  <h2 style="color:#007bff; margin-top:30px; margin-bottom:15px; border-bottom:2px solid #007bff; display:inline-block; padding-bottom:5px;">
+    Pedidos Pagados
+  </h2>
+
+  {% if pedidos_pagados %}
+    {% for pedido in pedidos_pagados %}
+      <div class="pedido-card pagado" 
+           style="background:#fff; border-radius:10px; padding:15px 20px; margin-bottom:15px; box-shadow:0 4px 15px rgba(0,0,0,0.08); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; border-left:5px solid #27ae60;">
+        <div class="pedido-info" style="flex:1; min-width:200px; margin-bottom:10px; color:#555;">
+          <strong style="color:#222;">Cliente:</strong> {{ pedido.cliente }}<br>
+          <strong style="color:#222;">Estado:</strong> {{ pedido.estado }}<br>
+          <strong style="color:#222;">Total:</strong> ${{ '%.2f' % pedido.total }}
+        </div>
+        <div class="btn-group" style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn-editar"
+                  onclick="location.href='{{ url_for('ver_detalles_pago', pedido_id=pedido._id) }}'"
+                  style="flex:1; min-width:120px; padding:8px 15px; border:none; border-radius:6px; background:#3498db; color:#fff; font-weight:500; cursor:pointer; transition:0.2s;">
+            Ver Detalles
+          </button>
+
+          <form method="POST" 
+                action="{{ url_for('eliminar_pedido', pedido_id=pedido._id) }}" 
+                onsubmit="return confirm('¿Seguro que quieres eliminar este pedido?');"
+                style="flex:1; min-width:120px;">
+            <button type="submit" class="btn-eliminar"
+                    style="width:100%; padding:8px 15px; border:none; border-radius:6px; background:#e74c3c; color:#fff; font-weight:500; cursor:pointer; transition:0.2s;">
+              Eliminar
+            </button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p style="font-style:italic; color:#777; text-align:center; margin-bottom:20px;">
+      No hay pedidos pagados.
+    </p>
+  {% endif %}
+
+{% endblock %}

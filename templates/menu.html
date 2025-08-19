@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}Sistema POS{% endblock %}</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f9;
+      color: #333;
+    }
+
+    /* --- NAVBAR --- */
+    .navbar {
+      background: linear-gradient(90deg, #2563eb, #1e40af);
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .navbar h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* --- CONTENEDOR --- */
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 25px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    /* Animación de entrada */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- BOTONES GENERALES --- */
+    .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      margin: 5px;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1e40af;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+  </style>
+</head>
+<body>
+  <!-- Menú principal -->
+  <div class="navbar">
+    <h1>Restaurante Familia Sanchez</h1>
+    <div class="nav-links">
+      <a href="{{ url_for('listar_productos') }}">Productos</a>
+      <a href="{{ url_for('nuevo_producto') }}">Registrar</a>
+      <a href="{{ url_for('pos_panel') }}">Pedidos</a>
+      <a href="{{ url_for('historial_ventas') }}">Ventas</a>
+      <a href="{{ url_for('historial_creditos') }}">Créditos</a>
+    </div>
+  </div>
+
+  <!-- Contenido dinámico -->
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

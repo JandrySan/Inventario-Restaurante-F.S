@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Agregar Nueva Categoría</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 30px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 360px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+      font-weight: 700;
+    }
+    form label {
+      font-weight: 600;
+      color: #444;
+      display: block;
+      margin-bottom: 8px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 1rem;
+      border: 1.8px solid #ccc;
+      border-radius: 6px;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+    button {
+      width: 100%;
+      padding: 12px 0;
+      margin-top: 20px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #217dbb;
+    }
+    ul.messages {
+      list-style-type: none;
+      padding: 0;
+      margin-bottom: 15px;
+    }
+    ul.messages li {
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    ul.messages li.error {
+      background-color: #fddede;
+      color: #d32f2f;
+      border: 1px solid #d32f2f;
+    }
+    ul.messages li.success {
+      background-color: #dff0d8;
+      color: #3c763d;
+      border: 1px solid #3c763d;
+    }
+    p {
+      text-align: center;
+      margin-top: 25px;
+    }
+    a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Agregar Nueva Categoría</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="messages">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <label for="nombre">Nombre de Categoría:</label>
+      <input type="text" id="nombre" name="nombre" required />
+      <button type="submit">Agregar Categoría</button>
+    </form>
+
+    <p><a href="{{ url_for('nuevo_producto') }}">← Volver a Nuevo Producto</a></p>
+  </div>
+</body>
+</html>

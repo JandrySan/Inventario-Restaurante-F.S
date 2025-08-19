@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Detalle de Crédito - Pedido #{{ pedido._id }}</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+    h1 { text-align: center; color: #007bff; margin-bottom: 30px; }
+    .pedido-info, .productos-lista { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 25px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 10px; text-align: center; }
+    th { background-color: #007bff; color: white; }
+    tr:nth-child(even) { background-color: #f7f9fc; }
+    tfoot td { font-weight: bold; background: #f1f3f6; }
+    .volver { display: inline-block; margin-top: 10px; color: #6c757d; text-decoration: none; font-weight: 500; }
+    .volver:hover { color: #343a40; }
+  </style>
+</head>
+<body>
+
+  <h1>Detalle de Crédito - Pedido #{{ pedido._id }}</h1>
+
+  <div class="pedido-info">
+    <p><strong>Cliente:</strong> {{ pedido.cliente }}</p>
+    <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+    <p><strong>Total:</strong> ${{ '%.2f' % pedido.total }}</p>
+    <p><strong>Saldo Restante:</strong> ${{ '%.2f' % (pedido.get('saldo_restante', 0)) }}</p>
+
+  </div>
+
+  <div class="productos-lista">
+    <h2>Productos</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Tamaño</th>
+          <th>Cantidad</th>
+          <th>Precio Unitario</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pedido.productos %}
+        <tr>
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.tamano if p.tamano else "-" }}</td>
+          <td>{{ p.cantidad }}</td>
+          <td>${{ '%.2f' % p.precio_unitario }}</td>
+          <td>${{ '%.2f' % (p.precio_unitario * p.cantidad) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4">Total</td>
+          <td>${{ '%.2f' % pedido.total }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <p style="text-align:center;">
+    <a href="{{ url_for('historial_creditos') }}" class="volver">← Volver al historial</a>
+  </p>
+
+</body>
+</html>

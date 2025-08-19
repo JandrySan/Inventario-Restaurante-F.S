@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pagar Pedido #{{ pedido._id }}</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; margin:0; padding:20px; color:#333;}
+    h1{text-align:center;color:#007bff;margin-bottom:10px;}
+    a.volver{display:inline-block;margin-bottom:20px;color:#6c757d;text-decoration:none;font-weight:500;}
+    a.volver:hover{color:#343a40;}
+    .pedido-detalle, .form-pago{background:#fff;padding:20px;border-radius:10px;box-shadow:0 4px 15px rgba(0,0,0,0.08);margin-bottom:25px;}
+    h3{color:#007bff;margin-bottom:15px;border-bottom:2px solid #007bff;display:inline-block;padding-bottom:5px;}
+    table{width:100%;border-collapse:collapse;margin-top:10px;}
+    th, td{padding:12px;text-align:center;border-bottom:1px solid #eee;}
+    th{background-color:#007bff;color:white;font-weight:600;}
+    tr:nth-child(even){background-color:#f7f9fc;}
+    label{display:block;margin-top:15px;font-weight:500;}
+    select, input[type=number]{padding:10px;width:100%;max-width:300px;border-radius:6px;border:1px solid #ccc;margin-top:5px;font-size:1rem;}
+    button{margin-top:20px;padding:12px 25px;font-size:1rem;border:none;border-radius:8px;cursor:pointer;color:#fff;background:linear-gradient(135deg,#27ae60,#1e8449);transition:transform 0.2s, background 0.3s;}
+    button:hover{transform:scale(1.05);}
+    #campo-efectivo,#campo-credito{display:none;margin-top:10px;}
+    #cambio,#saldo-restante{font-weight:bold;margin-top:5px;color:#e67e22;}
+  </style>
+</head>
+<body>
+
+<h1>Pagar Pedido #{{ pedido._id }}</h1>
+<a href="{{ url_for('pos_panel') }}" class="volver">← Volver al panel</a>
+
+<div class="pedido-detalle">
+  <h3>Detalles del Pedido</h3>
+  <p><strong>Cliente:</strong> {{ pedido.cliente }}</p>
+  <p><strong>Descripción:</strong> {{ pedido.descripcion or "Sin descripción" }}</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio Unitario</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in pedido.productos %}
+      <tr>
+        <td>{{ p.nombre }}{% if p.tamano %} ({{ p.tamano }}){% endif %}</td>
+        <td>{{ p.cantidad }}</td>
+        <td>${{ "%.2f"|format(p.precio_unitario) }}</td>
+        <td>${{ "%.2f"|format(p.precio_unitario * p.cantidad) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3" style="text-align:right;"><strong>Total:</strong></td>
+        <td><strong>${{ "%.2f"|format(pedido.total) }}</strong></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<div class="form-pago">
+  <h3>Pagar Pedido</h3>
+  <form method="POST" id="form-pago">
+    <label for="metodo_pago">Seleccione método de pago:</label>
+    <select name="metodo_pago" id="metodo_pago" required>
+      <option value="">-- Seleccione --</option>
+      <option value="Efectivo">Efectivo</option>
+      <option value="Transferencia">Transferencia</option>
+      <option value="Credito">Crédito</option>
+    </select>
+
+    <div id="campo-efectivo">
+      <label for="monto_entregado">Monto entregado:</label>
+      <input type="number" id="monto_entregado" name="monto_entregado" min="{{ pedido.total }}" step="0.01" />
+      <p id="cambio">Cambio: $0.00</p>
+    </div>
+
+    <div id="campo-credito">
+      <label for="monto_abono">Monto a abonar:</label>
+      <input type="number" id="monto_abono" name="monto_abono" min="0" max="{{ pedido.total }}" step="0.01" value="{{ pedido.total }}" />
+      <p id="saldo-restante">Saldo restante: ${{ pedido.total }}</p>
+    </div>
+
+    <button type="submit">Confirmar Pago</button>
+  </form>
+</div>
+
+<script>
+const metodoPagoSelect = document.getElementById('metodo_pago');
+const campoEfectivo = document.getElementById('campo-efectivo');
+const campoCredito = document.getElementById('campo-credito');
+const montoEntregadoInput = document.getElementById('monto_entregado');
+const montoAbonoInput = document.getElementById('monto_abono');
+const cambioTexto = document.getElementById('cambio');
+const saldoTexto = document.getElementById('saldo-restante');
+const totalPedido = {{ pedido.total }};
+
+metodoPagoSelect.addEventListener('change', () => {
+  if (metodoPagoSelect.value === 'Efectivo') {
+    campoEfectivo.style.display = 'block';
+    montoEntregadoInput.required = true;
+    campoCredito.style.display = 'none';
+    montoAbonoInput.required = false;
+  } else if (metodoPagoSelect.value === 'Credito') {
+    campoCredito.style.display = 'block';
+    montoAbonoInput.required = true;
+    campoEfectivo.style.display = 'none';
+    montoEntregadoInput.required = false;
+  } else {
+    campoEfectivo.style.display = 'none';
+    campoCredito.style.display = 'none';
+    montoEntregadoInput.required = false;
+    montoAbonoInput.required = false;
+  }
+});
+
+montoEntregadoInput.addEventListener('input', () => {
+  let entregado = parseFloat(montoEntregadoInput.value) || 0;
+  let cambio = entregado - totalPedido;
+  if (cambio < 0) cambio = 0;
+  cambioTexto.textContent = `Cambio: $${cambio.toFixed(2)}`;
+});
+
+montoAbonoInput.addEventListener('input', () => {
+  let abono = parseFloat(montoAbonoInput.value) || 0;
+  let saldo = totalPedido - abono;
+  if(saldo < 0) saldo = 0;
+  saldoTexto.textContent = `Saldo restante: $${saldo.toFixed(2)}`;
+});
+</script>
+
+</body>
+</html>

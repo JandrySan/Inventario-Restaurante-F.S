@@ -1,0 +1,364 @@
+{% block content %}
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f6f8;
+    color: #333;
+  }
+
+  h2 {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .contenedor {
+    display: flex;
+    gap: 25px;
+    margin: 25px auto;
+    max-width: 1200px;
+    flex-wrap: wrap;
+  }
+
+  /* CATEGORÍAS */
+  .categorias {
+    width: 220px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+  }
+  .categorias h3 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1d4ed8;
+  }
+  .categorias button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 10px;
+    background: #e5e7eb;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .categorias button.active,
+  .categorias button:hover {
+    background: #3b82f6;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+
+  /* PRODUCTOS */
+  .productos {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+  }
+  .productos h3 {
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #1d4ed8;
+  }
+  .productos-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .producto-card {
+    width: 150px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .producto-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  }
+  .producto-card strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #111827;
+  }
+  .producto-card span {
+    font-size: 0.95rem;
+    color: #4b5563;
+  }
+  .producto-card small {
+    display: block;
+    margin-top: 5px;
+    color: #6b7280;
+  }
+
+  /* DETALLE DEL PEDIDO */
+  .pedido-detalle {
+    margin-top: 20px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .pedido-detalle h3 {
+    margin-bottom: 15px;
+    color: #1d4ed8;
+    font-weight: 600;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 0.95rem;
+  }
+  th, td {
+    padding: 10px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  th {
+    background: #f3f4f6;
+    font-weight: 600;
+    color: #374151;
+  }
+  td input.cantidad {
+    width: 60px;
+    padding: 6px;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+  }
+  td button.eliminar {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  td button.eliminar:hover {
+    background: #b91c1c;
+    transform: scale(1.05);
+  }
+
+  /* BOTONES PRINCIPALES */
+  .btn-guardar {
+    background: #10b981;
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .btn-guardar:hover {
+    background: #059669;
+    transform: translateY(-2px);
+  }
+  .btn-volver {
+    background: #6b7280;
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .btn-volver:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 0.95rem;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  /* SCROLLBARS */
+  .productos-lista::-webkit-scrollbar,
+  .pedido-detalle table::-webkit-scrollbar {
+    width: 8px;
+  }
+  .productos-lista::-webkit-scrollbar-thumb,
+  .pedido-detalle table::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.15);
+    border-radius: 4px;
+  }
+</style>
+
+
+<h2>Editar Pedido</h2>
+
+<form method="POST" id="form-editar-pedido">
+  <label>Cliente:</label>
+  <input type="text" name="cliente" value="{{ pedido.cliente }}" required>
+
+  <label>Descripción:</label>
+  <textarea name="descripcion">{{ pedido.descripcion }}</textarea>
+
+  <input type="hidden" name="productos_pedido" id="productos_pedido">
+
+  <div class="contenedor">
+    <!-- CATEGORÍAS -->
+    <div class="categorias">
+      <h3>Categorías</h3>
+      <button type="button" class="active" data-categoria="todas">Todas</button>
+      {% for categoria in categorias %}
+        <button type="button" data-categoria="{{ categoria.nombre }}">{{ categoria.nombre|capitalize }}</button>
+      {% endfor %}
+    </div>
+
+    <!-- PRODUCTOS Y DETALLE -->
+    <div class="productos">
+      <h3>Productos</h3>
+      <div class="productos-lista" id="lista-productos">
+        {% for producto in productos %}
+        <div class="producto-card" 
+            data-categoria="{{ producto.categoria }}" 
+            data-id="{{ producto._id }}" 
+            data-nombre="{{ producto.nombre }}" 
+            data-precio="{{ producto.precio }}" 
+            data-stock="{{ producto.stock }}">
+          <strong>{{ producto.nombre }}</strong>
+          <span>${{ "%.2f"|format(producto.precio) }}</span><br>
+          <small style="color: gray;">Stock: {{ producto.stock }}</small>
+        </div>
+        {% endfor %}
+      </div>
+
+
+      <div class="pedido-detalle">
+        <h3>Productos en el pedido</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio Unitario</th>
+              <th>Subtotal</th>
+              <th>Eliminar</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-detalle">
+            {% for p in pedido.productos %}
+            <tr data-id="{{ p.producto_id }}">
+              <td>{{ p.nombre }}</td>
+              <td><input type="number" min="1" value="{{ p.cantidad }}" class="cantidad"></td>
+              <td>${{ "%.2f"|format(p.precio_unitario) }}</td>
+              <td class="subtotal">${{ "%.2f"|format(p.precio_unitario * p.cantidad) }}</td>
+              <td><button type="button" class="eliminar">X</button></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn-guardar">Guardar Cambios</button>
+  <button type="button" onclick="window.history.back()" class="btn-volver">Volver</button>
+</form>
+
+
+<script>
+  const categoriasBtns = document.querySelectorAll('.categorias button');
+  const productosCards = document.querySelectorAll('.producto-card');
+  const tablaDetalle = document.getElementById('tabla-detalle');
+  const productosPedidoInput = document.getElementById('productos_pedido');
+
+  // FILTRAR POR CATEGORÍA
+  categoriasBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      categoriasBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.categoria;
+      productosCards.forEach(card => {
+        if (cat === 'todas' || card.dataset.categoria === cat) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // AGREGAR PRODUCTO AL PEDIDO
+  productosCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const id = card.dataset.id;
+      const nombre = card.dataset.nombre;
+      const precio = parseFloat(card.dataset.precio);
+
+      let fila = tablaDetalle.querySelector(`tr[data-id="${id}"]`);
+      if (fila) {
+        let cantidadInput = fila.querySelector('.cantidad');
+        cantidadInput.value = parseInt(cantidadInput.value) + 1;
+        actualizarSubtotal(fila, precio);
+      } else {
+        fila = document.createElement('tr');
+        fila.dataset.id = id;
+        fila.innerHTML = `
+          <td>${nombre}</td>
+          <td><input type="number" min="1" value="1" class="cantidad"></td>
+          <td>$${precio.toFixed(2)}</td>
+          <td class="subtotal">$${precio.toFixed(2)}</td>
+          <td><button type="button" class="eliminar">X</button></td>
+        `;
+        tablaDetalle.appendChild(fila);
+      }
+    });
+  });
+
+  // ELIMINAR PRODUCTO
+  tablaDetalle.addEventListener('click', e => {
+    if (e.target.classList.contains('eliminar')) {
+      e.target.closest('tr').remove();
+    }
+  });
+
+  // ACTUALIZAR SUBTOTAL AL CAMBIAR CANTIDAD
+  tablaDetalle.addEventListener('input', e => {
+    if (e.target.classList.contains('cantidad')) {
+      const fila = e.target.closest('tr');
+      const precio = parseFloat(fila.children[2].innerText.replace('$',''));
+      actualizarSubtotal(fila, precio);
+    }
+  });
+
+  function actualizarSubtotal(fila, precio) {
+    const cantidad = parseInt(fila.querySelector('.cantidad').value);
+    fila.querySelector('.subtotal').innerText = '$' + (precio * cantidad).toFixed(2);
+  }
+
+  // ENVIAR FORMULARIO CON LOS PRODUCTOS
+  document.getElementById('form-editar-pedido').addEventListener('submit', () => {
+    const productos = [];
+    tablaDetalle.querySelectorAll('tr').forEach(fila => {
+      productos.push({
+        producto_id: fila.dataset.id,
+        cantidad: parseInt(fila.querySelector('.cantidad').value)
+      });
+    });
+    productosPedidoInput.value = JSON.stringify(productos);
+  });
+</script>
+{% endblock %}

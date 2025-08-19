@@ -1,0 +1,44 @@
+{% extends "menu.html" %}
+
+{% block title %}Lista de Productos{% endblock %}
+
+{% block content %}
+  <h1 style="text-align:center; color:#007bff;">Lista de Productos</h1>
+  <a href="{{ url_for('nuevo_producto') }}" class="agregar-producto">+ Agregar Producto</a>
+
+  <div class="productos-lista" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px; margin-top:20px;">
+    {% for p in productos %}
+      <div class="producto-card" style="background:#fff; border-radius:12px; padding:20px; box-shadow:0 4px 15px rgba(0,0,0,0.07);">
+        <div class="producto-nombre" style="font-weight:700; font-size:1.3rem; margin-bottom:10px; color:#007bff;">{{ p.nombre }}</div>
+        <div class="producto-detalles" style="margin-bottom:15px; font-size:0.95rem; line-height:1.5;">
+          <div><strong>Categoría:</strong> {{ p.categoria }}</div>
+          {% if p.categoria == 'camotillo' and p.precios_por_tamano %}
+            <div><strong>Precios por tamaño:</strong></div>
+            <ul>
+              {% for tamaño, precio in p.precios_por_tamano.items() %}
+                <li>{{ tamaño|capitalize }}: ${{ precio }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div><strong>Precio:</strong> ${{ p.precio }}</div>
+          {% endif %}
+          {% if p.categoria == "bebida" %}
+            <div>
+              <strong>Stock:</strong>
+              <span style="color:{% if p.stock is not none and p.stock < 5 %}red{% else %}black{% endif %}; font-weight:{% if p.stock is not none and p.stock < 5 %}bold{% else %}normal{% endif %};">
+                {{ p.stock }}
+              </span>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="btn-container" style="display:flex; gap:10px; justify-content:flex-end;">
+          <a href="{{ url_for('editar_producto', id=p._id|string) }}" style="background-color:#007bff; color:white; padding:8px 16px; border-radius:6px; font-weight:600; text-decoration:none;">Editar</a>
+          <form method="POST" action="{{ url_for('eliminar_producto', id=p._id|string) }}" onsubmit="return confirm('¿Seguro que deseas eliminar este producto?');" style="margin:0;">
+            <button type="submit" style="background-color:#e74c3c; color:white; padding:8px 16px; border-radius:6px; font-weight:600; border:none; cursor:pointer;">Eliminar</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

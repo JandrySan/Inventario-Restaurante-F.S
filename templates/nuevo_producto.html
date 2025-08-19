@@ -1,0 +1,61 @@
+{% extends "menu.html" %}
+
+{% block title %}Agregar Producto{% endblock %}
+
+{% block content %}
+  <div style="max-width: 500px; margin: 0 auto;">
+    <h1 style="text-align:center; margin-bottom:20px; color:#333; font-weight:700;">Agregar Producto</h1>
+    
+    <form method="POST" style="background:white; padding:25px 30px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+      <label for="nombre" style="display:block; margin-bottom:12px; font-weight:600; color:#444;">
+        Nombre:
+        <input type="text" id="nombre" name="nombre" required 
+          style="width:100%; padding:8px 12px; margin-top:6px; border:1.8px solid #ccc; border-radius:6px; font-size:1rem;" />
+      </label>
+
+      <label for="categoria" style="display:block; margin-bottom:12px; font-weight:600; color:#444;">
+        Categoría:
+        <select name="categoria" id="categoria-select" required
+          style="width:100%; padding:8px 12px; margin-top:6px; border:1.8px solid #ccc; border-radius:6px; font-size:1rem;">
+          {% for cat in categorias %}
+            <option value="{{ cat.nombre }}">{{ cat.nombre|capitalize }}</option>
+          {% endfor %}
+        </select>
+        <a href="{{ url_for('nueva_categoria') }}" class="link-agregar-cat" style="font-size:0.9rem; color:#3498db; margin-left:8px; text-decoration:none;">Agregar nueva categoría</a>
+      </label>
+
+      <label id="precio-normal-label" style="display:block; margin-bottom:12px; font-weight:600; color:#444;">
+        Precio:
+        <input type="number" name="precio" step="0.01" min="0"
+          style="width:100%; padding:8px 12px; margin-top:6px; border:1.8px solid #ccc; border-radius:6px; font-size:1rem;" />
+      </label>
+
+      <label for="stock" style="display:block; margin-bottom:12px; font-weight:600; color:#444;">
+        Stock (solo para bebidas):
+        <input type="number" id="stock" name="stock" min="0"
+          style="width:100%; padding:8px 12px; margin-top:6px; border:1.8px solid #ccc; border-radius:6px; font-size:1rem;" />
+      </label>
+
+      <label for="codigo" style="display:block; margin-bottom:12px; font-weight:600; color:#444;">
+        Código único (opcional):
+        <input type="text" id="codigo" name="codigo"
+          style="width:100%; padding:8px 12px; margin-top:6px; border:1.8px solid #ccc; border-radius:6px; font-size:1rem;" />
+      </label>
+
+      <label for="imagen_url" style="display:block; margin-bottom:12px; font-weight:600; color:#444;">
+        URL de imagen (opcional):
+        <input type="text" id="imagen_url" name="imagen_url"
+          style="width:100%; padding:8px 12px; margin-top:6px; border:1.8px solid #ccc; border-radius:6px; font-size:1rem;" />
+      </label>
+
+      <button type="submit" 
+        style="background-color:#3498db; color:white; font-weight:700; padding:12px 20px; border:none; border-radius:8px; cursor:pointer; font-size:1.1rem; width:100%; margin-top:15px; transition:background-color 0.3s;">
+        Agregar
+      </button>
+    </form>
+
+    <p style="text-align:center; margin-top:15px;">
+      <a href="{{ url_for('listar_productos') }}" style="color:#3498db; text-decoration:none;">← Volver a lista de productos</a>
+    </p>
+  </div>
+{% endblock %}

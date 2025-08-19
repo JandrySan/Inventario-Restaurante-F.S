@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nuevo Pedido</title>
+  <style>
+    /* --- BODY --- */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 20px auto;
+      max-width: 950px;
+      background: #f0f2f5;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 15px;
+      display: inline-block;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* --- FORM --- */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgb(0 0 0 / 8%);
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 1rem;
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      transition: all 0.3s;
+      resize: vertical;
+    }
+    input[type="text"]:focus, textarea:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 6px rgba(52, 152, 219, 0.3);
+      outline: none;
+    }
+
+    /* --- CONTENEDOR PRODUCTOS --- */
+    .contenedor-productos {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    #lista-categorias {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    #lista-categorias button {
+      padding: 8px 18px;
+      cursor: pointer;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      background-color: #e2e8f0;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    #lista-categorias button.active {
+      background-color: #3498db;
+      color: white;
+      border-color: #3498db;
+    }
+    #lista-categorias button:hover:not(.active) {
+      background-color: #d1d5db;
+    }
+
+    #productos-catalogo {
+      flex: 1;
+      max-height: 400px;
+      overflow-y: auto;
+      border-radius: 10px;
+      background: #f9fafb;
+      padding: 15px;
+      border: 1px solid #ddd;
+    }
+    #productos-catalogo > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 2px 5px rgb(0 0 0 / 5%);
+      transition: all 0.2s;
+    }
+    #productos-catalogo > div:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgb(0 0 0 / 10%);
+    }
+
+    #productos-catalogo button {
+      background-color: #10b981;
+      border: none;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    #productos-catalogo button:hover {
+      background-color: #059669;
+    }
+
+    #resumen-pedido {
+      flex: 1;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      max-height: 400px;
+    }
+
+    #resumen-pedido h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-weight: 700;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 5px;
+      color: #1d4ed8;
+    }
+
+    #lista-productos-agregados {
+      list-style: none;
+      padding-left: 0;
+      flex-grow: 1;
+      overflow-y: auto;
+      margin-bottom: 15px;
+    }
+    #lista-productos-agregados li {
+      padding: 8px 12px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      border-radius: 6px;
+      background: #f3f4f6;
+      margin-bottom: 6px;
+    }
+    #lista-productos-agregados li:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    #lista-productos-agregados li button {
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 2px 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+    #lista-productos-agregados li button:hover {
+      background: #b91c1c;
+    }
+
+    #total-pedido {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #10b981;
+      margin-bottom: 10px;
+      text-align: right;
+    }
+
+    button[type="submit"] {
+      background-color: #1d4ed8;
+      color: white;
+      border: none;
+      padding: 14px 0;
+      font-size: 1.2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    button[type="submit"]:hover {
+      background-color: #1e40af;
+      transform: translateY(-2px);
+    }
+
+    /* SCROLL BARRAS SUAVES */
+    #productos-catalogo::-webkit-scrollbar,
+    #lista-productos-agregados::-webkit-scrollbar {
+      width: 8px;
+    }
+    #productos-catalogo::-webkit-scrollbar-thumb,
+    #lista-productos-agregados::-webkit-scrollbar-thumb {
+      background-color: rgba(0,0,0,0.2);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Nuevo Pedido</h1>
+<p><a href="{{ url_for('pos_panel') }}">← Volver al panel principal </a></p>
+
+<form id="form-pedido" method="POST" action="{{ url_for('pos_nuevo_pedido') }}">
+  <label for="cliente">Cliente:</label>
+  <input type="text" name="cliente" id="cliente" required />
+
+  <label for="descripcion">Descripción:</label>
+  <textarea name="descripcion" id="descripcion" rows="3"></textarea>
+
+  <div class="contenedor-productos">
+    <div style="flex:1">
+      <h3>Categorías</h3>
+      <div id="lista-categorias">
+        <button type="button" class="active" data-categoria="todas">Todas</button>
+        {% for categoria in categorias %}
+          <button type="button" data-categoria="{{ categoria.nombre|lower|e }}">{{ categoria.nombre|capitalize }}</button>
+        {% endfor %}
+      </div>
+
+      <h3>Productos</h3>
+      <div id="productos-catalogo">
+        {% for producto in productos %}
+          <div class="producto-item" data-categoria="{{ producto.categoria|lower|e }}">
+            <span>{{ producto.nombre }} - ${{ producto.precio }}</span>
+            {% if producto.categoria|lower == 'bebida' %}
+              <span style="margin-left:10px; font-weight:600; color: {% if producto.stock < 5 %}red{% else %}black{% endif %};">
+                Stock: {{ producto.stock }}
+              </span>
+            {% endif %}
+            <button type="button" onclick="agregarProducto('{{ producto._id }}', '{{ producto.nombre }}', {{ producto.precio }})">Agregar</button>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div id="resumen-pedido">
+      <h3>Productos agregados</h3>
+      <ul id="lista-productos-agregados"></ul>
+      <div id="total-pedido">Total: $0.00</div>
+    </div>
+  </div>
+
+  <input type="hidden" name="productos_pedido" id="productos_pedido_input" />
+  <button type="submit">Guardar Pedido</button>
+</form>
+
+<script>
+  const productosAgregados = [];
+
+  const botonesCategorias = document.querySelectorAll('#lista-categorias button');
+  const productosCatalogo = document.querySelectorAll('#productos-catalogo .producto-item');
+
+  botonesCategorias.forEach(boton => {
+    boton.addEventListener('click', () => {
+      botonesCategorias.forEach(btn => btn.classList.remove('active'));
+      boton.classList.add('active');
+
+      const catSeleccionada = boton.getAttribute('data-categoria').toLowerCase();
+      productosCatalogo.forEach(prod => {
+        if(catSeleccionada === 'todas' || prod.getAttribute('data-categoria').toLowerCase() === catSeleccionada){
+          prod.style.display = 'flex';
+        } else {
+          prod.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  function agregarProducto(id, nombre, precio) {
+    let prod = productosAgregados.find(p => p.producto_id === id);
+    if(prod) {
+      prod.cantidad++;
+    } else {
+      productosAgregados.push({ producto_id: id, nombre, precio, cantidad: 1 });
+    }
+    actualizarLista();
+  }
+
+  function actualizarLista() {
+    const ul = document.getElementById('lista-productos-agregados');
+    ul.innerHTML = '';
+    let total = 0;
+    productosAgregados.forEach((p, i) => {
+      total += p.precio * p.cantidad;
+      ul.innerHTML += `
+        <li>
+          ${p.nombre} x${p.cantidad} - $${(p.precio * p.cantidad).toFixed(2)}
+          <button onclick="eliminarProducto(${i})">×</button>
+        </li>`;
+    });
+    document.getElementById('total-pedido').textContent = `Total: $${total.toFixed(2)}`;
+    document.getElementById('productos_pedido_input').value = JSON.stringify(productosAgregados);
+  }
+
+  function eliminarProducto(index) {
+    productosAgregados.splice(index, 1);
+    actualizarLista();
+  }
+</script>
+
+</body>
+</html>
